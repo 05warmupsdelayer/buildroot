@@ -14,16 +14,20 @@ PCSX_REARMED_MAKE_OPTS += \
 	CC=$(TARGET_CROSS)gcc \
 	CXX=$(TARGET_CROSS)g++
 
-ifeq ($(BR2_aarch64),y)
-PCSX_REARMED_MAKE_OPTS += BUILTIN_GPU=neon DYNAREC=ari64 HAVE_NEON=1
-else ifeq ($(BR2_arm),y)
-PCSX_REARMED_MAKE_OPTS += BUILTIN_GPU=neon DYNAREC=ari64 HAVE_NEON=1 HAVE_NEON_ASM=1
-else
-PCSX_REARMED_MAKE_OPTS += DYNAREC=none
-endif
+# Optimizations and settings for ARM architecture
+CFLAGS += -marm -mtune=cortex-a9 -mfloat-abi=hard -march=armv7-a -fomit-frame-pointer
+CFLAGS += -ffast-math -fdata-sections -ffunction-sections -fsingle-precision-constant -flto -fPIC
+LDFLAGS += -flto -fPIC
+
+# Define the CPU architecture and optimization flags
+CPU_ARCH := arm
+OPTIMIZE += -Ofast -DNDEBUG=1
+
+# Make sure to explicitly disable NEON optimizations
+PCSX_REARMED_MAKE_OPTS += DYNAREC=ari64 HAVE_NEON=0 HAVE_NEON_ASM=0
 
 define PCSX_REARMED_BUILD_CMDS
-	$(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_ARGS) $(MAKE) -C $(@D) -f Makefile.libretro $(PCSX_REARMED_MAKE_OPTS)
+    $(TARGET_MAKE_ENV) $(TARGET_CONFIGURE_ARGS) $(MAKE) -C $(@D) -f Makefile.libretro $(PCSX_REARMED_MAKE_OPTS)
 endef
 
 define PCSX_REARMED_INSTALL_TARGET_CMDS

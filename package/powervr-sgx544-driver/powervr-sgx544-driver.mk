@@ -15,9 +15,9 @@ define POWERVR_SGX544_DRIVER_INSTALL_STAGING_CMDS
 
         cp -rf $(@D)/include/* $(STAGING_DIR)/usr/include/
 
-        $(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/powervr-sgx544-driver/egl.pc \
+        $(INSTALL) -D -m 0644 package/powervr-sgx544-driver/egl.pc \
                 $(STAGING_DIR)/usr/lib/pkgconfig/egl.pc
-        $(INSTALL) -D -m 0644 $(BR2_EXTERNAL_BATOCERA_PATH)/package/batocera/gpu/powervr-sgx544-driver/glesv2.pc \
+        $(INSTALL) -D -m 0644 package/powervr-sgx544-driver/glesv2.pc \
                 $(STAGING_DIR)/usr/lib/pkgconfig/glesv2.pc
 	cd $(@D)/v2 && ./install.sh --root $(STAGING_DIR)
 endef

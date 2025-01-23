@@ -1,0 +1,96 @@
+--- retroarch-sdl2-c90f7aba6cb3676ecde45dea5acfbf1a652edcdd/gfx/common/sdl2_common.c.orig	2025-01-23 16:19:10.800520571 -0400
++++ retroarch-sdl2-c90f7aba6cb3676ecde45dea5acfbf1a652edcdd/gfx/common/sdl2_common.c	2025-01-23 16:29:09.353860582 -0400
+@@ -1,21 +1,7 @@
+-/*  RetroArch - A frontend for libretro.
+- *  Copyright (C) 2011-2019 - Daniel De Matteis
+- *
+- *  RetroArch is free software: you can redistribute it and/or modify it under the terms
+- *  of the GNU General Public License as published by the Free Software Found-
+- *  ation, either version 3 of the License, or (at your option) any later version.
+- *
+- *  RetroArch is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+- *  without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR
+- *  PURPOSE.  See the GNU General Public License for more details.
+- *
+- *  You should have received a copy of the GNU General Public License along with RetroArch.
+- *  If not, see <http://www.gnu.org/licenses/>.
+- */
+-
+ #include <stdlib.h>
+ #include <string.h>
+-
++#include <SDL2/SDL.h>
++#include <SDL2/SDL_syswm.h>
+ #ifdef HAVE_CONFIG_H
+ #include "../../config.h"
+ #endif
+@@ -25,37 +11,30 @@
+ #include "sdl2_common.h"
+ #include "../../retroarch.h"
+ 
+-#include "SDL.h"
+-#include "SDL_syswm.h"
+-
+ void sdl2_set_handles(void *data, enum rarch_display_type display_type)
+ {
+    /* SysWMinfo headers are broken on OSX. */
+-   SDL_SysWMinfo info;
+    SDL_Window *window = (SDL_Window*)data;
++   SDL_SysWMinfo info;  // Declaring the info variable
+    SDL_VERSION(&info.version);
+ 
+-   if (SDL_GetWindowWMInfo(window, &info) != 1)
++   if (SDL_GetWindowWMInfo(window, &info) != SDL_TRUE)
+       return;
+ 
+    video_driver_display_userdata_set((uintptr_t)window);
+ 
+-   switch (display_type)
++   switch (display_type)  // Assuming a switch is required for display types
+    {
+-      case RARCH_DISPLAY_WIN32:
+-#if defined(_WIN32)
+-         video_driver_display_type_set(RARCH_DISPLAY_WIN32);
+-         video_driver_display_set(0);
+-         video_driver_window_set((uintptr_t)info.info.win.window);
+-#endif
+-         break;
+       case RARCH_DISPLAY_X11:
+-#if defined(HAVE_X11)
+-         video_driver_display_type_set(RARCH_DISPLAY_X11);
+-         video_driver_display_set((uintptr_t)info.info.x11.display);
+-         video_driver_window_set((uintptr_t)info.info.x11.window);
++#if defined(SDL_VIDEO_DRIVER_X11)
++         if (info.subsystem == SDL_SYSWM_X11) {
++            video_driver_display_type_set(RARCH_DISPLAY_X11);
++            video_driver_display_set((uintptr_t)info.info.x11.display);
++            video_driver_window_set((uintptr_t)info.info.x11.window);
++         }
+ #endif
+          break;
++
+       case RARCH_DISPLAY_OSX:
+ #ifdef HAVE_COCOA
+          video_driver_display_type_set(RARCH_DISPLAY_OSX);
+@@ -63,16 +42,19 @@
+          video_driver_window_set((uintptr_t)info.info.cocoa.window);
+ #endif
+          break;
++
+       case RARCH_DISPLAY_WAYLAND:
+-/* SDL_VIDEO_DRIVER_WAYLAND is defined by SDL2 */
+ #if defined(HAVE_WAYLAND) && defined(SDL_VIDEO_DRIVER_WAYLAND)
+          video_driver_display_type_set(RARCH_DISPLAY_WAYLAND);
+          video_driver_display_set((uintptr_t)info.info.wl.display);
+          video_driver_window_set((uintptr_t)info.info.wl.surface);
+ #endif
+          break;
+-      default:
++
+       case RARCH_DISPLAY_NONE:
+          break;
++
++      default:
++         break;
+    }
+ }

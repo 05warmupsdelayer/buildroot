@@ -1,0 +1,50 @@
+--- retroarch-c90f7aba6cb3676ecde45dea5acfbf1a652edcdd/gfx/drivers/sdl_gfx.c.orig	2025-01-23 15:52:10.164292620 -0400
++++ retroarch-c90f7aba6cb3676ecde45dea5acfbf1a652edcdd/gfx/drivers/sdl_gfx.c	2025-01-23 15:53:51.288861410 -0400
+@@ -17,7 +17,8 @@
+ 
+ #include <stdlib.h>
+ #include <string.h>
+-
++#include <SDL/SDL.h>
++#include <SDL/SDL_syswm.h>
+ #include <gfx/scaler/scaler.h>
+ #include <gfx/video_frame.h>
+ #include "../../verbosity.h"
+@@ -225,23 +226,22 @@
+ 
+ static void sdl_gfx_set_handles(void)
+ {
+-   /* SysWMinfo headers are broken on OSX. */
+-#if defined(_WIN32) || defined(HAVE_X11)
+-   SDL_SysWMinfo info;
+-   SDL_VERSION(&info.version);
++   /* Remove X11 support */
++#if defined(_WIN32)
++    SDL_SysWMinfo info;
++    SDL_VERSION(&info.version);
+ 
+-   if (SDL_GetWMInfo(&info) != 1)
+-      return;
++    if (SDL_GetWMInfo(&info) != 1)
++        return;
+ 
+-#if defined(_WIN32)
+-   video_driver_display_type_set(RARCH_DISPLAY_WIN32);
+-   video_driver_display_set(0);
+-   video_driver_window_set((uintptr_t)info.window);
+-#elif defined(HAVE_X11)
+-   video_driver_display_type_set(RARCH_DISPLAY_X11);
+-   video_driver_display_set((uintptr_t)info.info.x11.display);
+-   video_driver_window_set((uintptr_t)info.info.x11.window);
+-#endif
++    video_driver_display_type_set(RARCH_DISPLAY_WIN32);
++    video_driver_display_set(0);
++    video_driver_window_set((uintptr_t)info.window);
++#else
++    /* Fallback for unsupported platforms */
++    video_driver_display_type_set(RARCH_DISPLAY_NONE);
++    video_driver_display_set(0);
++    video_driver_window_set(0);
+ #endif
+ }
+ 

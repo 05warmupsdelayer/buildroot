@@ -13,15 +13,15 @@ SDL_CPE_ID_VENDOR = libsdl
 SDL_CPE_ID_PRODUCT = simple_directmedia_layer
 SDL_INSTALL_STAGING = YES
 
-# we're patching configure.in, but package cannot autoreconf with our version of
-# autotools, so we have to do it manually instead of setting SDL_AUTORECONF = YES
+# Automatically run autogen if necessary
 define SDL_RUN_AUTOGEN
-	cd $(@D) && PATH=$(BR_PATH) ./autogen.sh
+        cd $(@D) && PATH=$(BR_PATH) ./autogen.sh
 endef
 
 SDL_PRE_CONFIGURE_HOOKS += SDL_RUN_AUTOGEN
 HOST_SDL_PRE_CONFIGURE_HOOKS += SDL_RUN_AUTOGEN
 
+# Dependencies for building SDL
 SDL_DEPENDENCIES += host-automake host-autoconf host-libtool
 HOST_SDL_DEPENDENCIES += host-automake host-autoconf host-libtool
 
@@ -51,9 +51,9 @@ endif
 ifeq ($(BR2_PACKAGE_SDL_X11),y)
 SDL_CONF_OPTS += --enable-video-x11=yes
 SDL_DEPENDENCIES += \
-	xlib_libX11 xlib_libXext \
-	$(if $(BR2_PACKAGE_XLIB_LIBXRENDER), xlib_libXrender) \
-	$(if $(BR2_PACKAGE_XLIB_LIBXRANDR), xlib_libXrandr)
+        xlib_libX11 xlib_libXext \
+        $(if $(BR2_PACKAGE_XLIB_LIBXRENDER), xlib_libXrender) \
+        $(if $(BR2_PACKAGE_XLIB_LIBXRANDR), xlib_libXrandr)
 else
 SDL_CONF_OPTS += --enable-video-x11=no
 endif
@@ -62,7 +62,7 @@ ifneq ($(BR2_USE_MMU),y)
 SDL_CONF_OPTS += --enable-dga=no
 endif
 
-# overwrite autodection (prevents confusion with host libpth version)
+# Optional dependencies
 ifeq ($(BR2_PACKAGE_LIBPTHSEM_COMPAT),y)
 SDL_CONF_OPTS += --enable-pth
 SDL_CONF_ENV += ac_cv_path_PTH_CONFIG=$(STAGING_DIR)/usr/bin/pth-config
@@ -83,23 +83,28 @@ ifeq ($(BR2_PACKAGE_MESA3D),y)
 SDL_DEPENDENCIES += mesa3d
 endif
 
+# Common SDL configuration options
 SDL_CONF_OPTS += \
-	--disable-rpath \
-	--enable-pulseaudio=no \
-	--disable-arts \
-	--disable-esd \
-	--disable-nasm \
-	--disable-video-ps3
+        --disable-rpath \
+        --enable-pulseaudio=no \
+        --disable-arts \
+        --disable-esd \
+        --disable-nasm \
+        --disable-video-ps3
 
 HOST_SDL_CONF_OPTS += \
-	--enable-pulseaudio=no \
-	--enable-video-x11=no \
-	--disable-arts \
-	--disable-esd \
-	--disable-nasm \
-	--disable-video-ps3
+        --enable-pulseaudio=no \
+        --enable-video-x11=no \
+        --disable-arts \
+        --disable-esd \
+        --disable-nasm \
+        --disable-video-ps3
 
 SDL_CONFIG_SCRIPTS = sdl-config
 
+# Call to make the package buildable
 $(eval $(autotools-package))
 $(eval $(host-autotools-package))
+
+# Optional Git submodule support
+SDL_RUN_GIT_SUBMODULES = YES

@@ -18,16 +18,16 @@ index 7a6b968d..a1d9c6b3 100644
 -		$(DESTDIR)$(INSTALLDIR)/src
 +		$(DESTDIR)$(INSTALLDIR)/src \
 +		$(DESTDIR)$(INSTALLDIR)/Automatic \
-+		$(DESTDIR)$(INSTALLDIR)/FlatUX \
++		 \
 +		$(DESTDIR)$(INSTALLDIR)/Systematic \
 +		$(DESTDIR)$(INSTALLDIR)/branding \
 +		$(DESTDIR)$(INSTALLDIR)/cfg \
 +		$(DESTDIR)$(INSTALLDIR)/ctr \
 +		$(DESTDIR)$(INSTALLDIR)/devtools \
-+		$(DESTDIR)$(INSTALLDIR)/fonts \
-+		$(DESTDIR)$(INSTALLDIR)/glui \
-+		$(DESTDIR)$(INSTALLDIR)/menu_widgets \
-+		$(DESTDIR)$(INSTALLDIR)/nxrgui \
++		 \
++		 \
++		 \
++		 \
 +		$(DESTDIR)$(INSTALLDIR)/pkg \
 +		$(DESTDIR)$(INSTALLDIR)/scripts \
 +		$(DESTDIR)$(INSTALLDIR)/sounds \

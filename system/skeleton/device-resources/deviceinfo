@@ -3,6 +3,8 @@ export DEVICE_MANUFACTURER="Anbernic"
 export DEVICE_MODEL="RG35XX+"
 export DEVICE_NAME="$DEVICE_MANUFACTURER $DEVICE_MODEL"
 export DEVICE_CODENAME=`echo $DEVICE_MODEL | tr "[:upper:]" "[:lower:]"`
+export LANG=en_US.UTF-8
+export LC_TIME=en_US.UTF-8
 
 # Use the fbcon SDL driver
 export SDL_VIDEODRIVER=fbcon

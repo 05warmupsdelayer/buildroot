@@ -1,0 +1,39 @@
+--- retroarch-sdl2-c90f7aba6cb3676ecde45dea5acfbf1a652edcdd/audio/drivers/tinyalsa.c.orig	2025-01-27 10:13:36.257430660 -0400
++++ retroarch-sdl2-c90f7aba6cb3676ecde45dea5acfbf1a652edcdd/audio/drivers/tinyalsa.c	2025-01-27 10:15:30.739634749 -0400
+@@ -226,15 +226,29 @@
+ 
+ static bool tinyalsa_start(void *data, bool is_shutdown)
+ {
+-	tinyalsa_t *tinyalsa = (tinyalsa_t*)data;
++    tinyalsa_t *tinyalsa = (tinyalsa_t*)data;
+ 
+-	while (tinyalsa->pcm == NULL)
+-	{
+-		tinyalsa->pcm = (int *)pcm_open(tinyalsa->card, tinyalsa->device, PCM_OUT | PCM_NONBLOCK | PCM_MONOTONIC | PCM_NORESTART | (tinyalsa->use_mmap ? PCM_MMAP | PCM_NOIRQ : 0), &tinyalsa->config);
+-		tinyalsa_first_frame_freewheel_workaround(tinyalsa);
+-	}
++    while (tinyalsa->pcm == NULL)
++    {
++        tinyalsa->pcm = pcm_open(
++            tinyalsa->card,
++            tinyalsa->device,
++            PCM_OUT | PCM_NONBLOCK | PCM_MONOTONIC | PCM_NORESTART | (tinyalsa->use_mmap ? PCM_MMAP | PCM_NOIRQ : 0),
++            &tinyalsa->config
++        );
+ 
+-	return tinyalsa->pcm != NULL;
++        if (tinyalsa->pcm && !pcm_is_ready(tinyalsa->pcm))
++        {
++            RARCH_ERR("[TINYALSA]: Failed to open audio device: %s\n", pcm_get_error(tinyalsa->pcm));
++            pcm_close(tinyalsa->pcm);
++            tinyalsa->pcm = NULL;
++            return false;
++        }
++
++        tinyalsa_first_frame_freewheel_workaround(tinyalsa);
++    }
++
++    return tinyalsa->pcm != NULL;
+ }
+ 
+ static bool tinyalsa_stop(void *data)

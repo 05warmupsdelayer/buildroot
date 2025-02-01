@@ -26,7 +26,7 @@ RETROARCH_SDL2_CONFIG_OPTS = \
 	--disable-metal \
 	--disable-opengl1 \
 	--disable-freetype \
-	--enable-rpng
+	--enable-rpng 
 
 # Depend on main RetroArch binary build
 RETROARCH_SDL2_DEPENDENCIES += retroarch

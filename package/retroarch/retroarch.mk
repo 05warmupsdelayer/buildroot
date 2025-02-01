@@ -27,6 +27,7 @@ RETROARCH_CONFIG_OPTS = \
 	--disable-opengl1 \
 	--disable-freetype \
 	--enable-rpng
+	
 
 # Build with SDL backend by default
 RETROARCH_CONFIG_OPTS += --disable-sdl2 --enable-sdl

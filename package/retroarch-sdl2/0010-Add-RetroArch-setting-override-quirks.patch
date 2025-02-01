@@ -39,7 +39,7 @@ index f4c7a6a1e9..7765831dc5 100644
 +   // configuration_set_string(settings, settings->arrays.menu_driver, menu_backend != NULL ? menu_backend : "rgui");
 +
 +   // Override the menu scale factor
-+   // configuration_set_float(settings, settings->floats.menu_scale_factor, menu_scale_factor != NULL ? (float)strtod(menu_scale_factor, NULL) : 1.0f);
++   configuration_set_float(settings, settings->floats.menu_scale_factor, menu_scale_factor != NULL ? (float)strtod(menu_scale_factor, NULL) : 1.0f);
 +
     /* Pre-initialize all drivers
      * Attempts to find a default driver for

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Expand ROMS partition..
+if [ -f /mnt/.please_create ] || [ ! -e "/dev/mmcblk0p8" ]; then
+    /mnt/mod/ctrl/create.sh
+fi
+
+# Mount the root file system
+mount -o bind /mnt/rootfs /root
+
+# Mount boot & mkdir
+if [ -b /dev/mmcblk1 ]
+then
+mkdir -p /mnt/sdcard/boot/device-resources
+mount -o bind /mnt/sdcard/boot /boot
+else
+mkdir -p /mnt/mmc/boot/device-resources
+mount -o bind /mnt/mmc/boot /boot
+fi
+
+# Check and copy deviceinfo if it does not exist
+
+if [ ! -f /boot/device-resources/deviceinfo ]; then
+    echo "deviceinfo not found, copying default..."
+    cp -r /mnt/rootfs/device-resources /boot
+    echo "deviceinfo copied."
+else
+    echo "deviceinfo already exists."
+fi
+
+# Run the deviceinfo script from TF1/TF2 (sets necessary, device-specific environment variables)
+source /boot/device-resources/deviceinfo
+
+# Setup the environment variables
+export PATH=/bin:/sbin:$PATH
+export LD_LIBRARY_PATH=/usr/lib:/mnt/vendor/lib
+
+# Execute the init script (this one should never return)
+/bin/bash /mnt/init
+
+# Sync data to disk
+sync
+
+# Power the device off
+echo o > /proc/sysrq-trigger
+
